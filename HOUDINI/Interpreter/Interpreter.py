@@ -151,7 +151,7 @@ class Interpreter:
                 for d in range(1, y_pred_output.shape.__len__()):
                     num_outputs_per_data_point *= y_pred_output.shape[d]
                 torch_mse = F.mse_loss(y_pred_output, y, size_average=False)
-                mse += (torch_mse.cpu().data.numpy()[0] / float(num_outputs_per_data_point))
+                mse += (torch_mse.cpu().data.numpy() / float(num_outputs_per_data_point))
 
             if output_type == ProgramOutputType.INTEGER or output_type == ProgramOutputType.SIGMOID:
                 y_pred_int = y_pred_output.data.cpu().numpy().round().astype(np.int)
@@ -273,17 +273,22 @@ class Interpreter:
                         value.eval()
                     c_accuracy = self._get_accuracy(program, data_loader_val, output_type, new_fns_dict)
                     c_accuracy_test = self._get_accuracy(program, data_loader_test , output_type, new_fns_dict)
-
+                    if c_accuracy < 0:
+                        c_accuracy = c_accuracy + 120
+                        c_accuracy = c_accuracy/100
+                    if max_accuracy < 0:
+                        max_accuracy = 120 + max_accuracy
+                        max_accuracy = max_accuracy/100
                     accuracies_val.append(c_accuracy)
                     accuracies_test.append(c_accuracy_test)
                     iterations.append(current_iteration)
-
+                    
                     if max_accuracy < c_accuracy:
                         max_accuracy = c_accuracy
                         # store the state_dictionary of the best performing model
                         for new_fn_name, new_fn in new_fns_dict.items():
                             max_accuracy_new_fns_states[new_fn_name] = self._clone_hidden_state(new_fn.state_dict())
-
+                    
                     print("c_accuracy", c_accuracy)
 
                     # set all new functions to train mode
@@ -291,6 +296,7 @@ class Interpreter:
                         value.train()
 
                 current_iteration += 1
+        
 
         print("max_accuracy_found_during_training:", max_accuracy)
         #set the state_dictionaries of the new functions to the model with best validation accuracy
