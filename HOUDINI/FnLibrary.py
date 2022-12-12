@@ -2,6 +2,8 @@ from typing import Dict, Optional
 import torch.nn as nn
 import pickle
 import os.path
+import torch
+from torch import split
 
 from HOUDINI.Synthesizer.AST import *
 from HOUDINI.Synthesizer.AST import PPSort
@@ -113,8 +115,8 @@ class FnLibrary:
             iterable = iterable[1]
 
         if isinstance(iterable, torch.autograd.variable.Variable):
-            iterable = split(iterable)
-            iterable = [split(i) for i in iterable]
+            #iterable = split(iterable)
+            iterable = [split(i,1) for i in iterable]
 
         result = [[fn(j) for j in i] for i in iterable]
         return result
@@ -126,8 +128,8 @@ class FnLibrary:
                 iterable = iterable[1]
 
             if isinstance(iterable, torch.autograd.variable.Variable):
-                iterable = split(iterable)
-                iterable = [split(i) for i in iterable]
+                #iterable = split(iterable)
+                iterable = [split(i,1) for i in iterable]
 
             result = [[fn(j) for j in i] for i in iterable]
             return result

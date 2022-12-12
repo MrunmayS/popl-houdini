@@ -274,10 +274,10 @@ class Interpreter:
                     c_accuracy = self._get_accuracy(program, data_loader_val, output_type, new_fns_dict)
                     c_accuracy_test = self._get_accuracy(program, data_loader_test , output_type, new_fns_dict)
                     if c_accuracy < 0:
-                        c_accuracy = c_accuracy + 120
+                        c_accuracy = c_accuracy + 100
                         c_accuracy = c_accuracy/100
                     if max_accuracy < 0:
-                        max_accuracy = 120 + max_accuracy
+                        max_accuracy = 100 + max_accuracy
                         max_accuracy = max_accuracy/100
                     accuracies_val.append(c_accuracy)
                     accuracies_test.append(c_accuracy_test)
@@ -354,10 +354,9 @@ class Interpreter:
                                                                         data_loader_tr, data_loader_val, data_loader_test)
         val_accuracy = self._get_accuracy(program, data_loader_val, output_type, new_fns_dict)
         test_accuracy = self._get_accuracy(program, data_loader_test, output_type, new_fns_dict)
-        if val_accuracy < 100:
+        if val_accuracy < 0:
             val_accuracy = val_accuracy + 100
-
-        if test_accuracy < 100:
+        if test_accuracy < 0:
             test_accuracy = test_accuracy + 100
         print("validation accuracy=", val_accuracy)
         print("test accuracy=", test_accuracy)
